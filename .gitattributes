@@ -1,0 +1,5 @@
+* text=auto
+
+# Enable later, once you have real art/audio (run `git lfs install` first):
+# *.png filter=lfs diff=lfs merge=lfs -text
+# *.ogg filter=lfs diff=lfs merge=lfs -text
