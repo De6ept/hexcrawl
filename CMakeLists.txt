@@ -29,10 +29,19 @@ add_library(hexcrawl_core STATIC
   src/core/version.cpp
   src/core/resolver.cpp
   src/core/cards.cpp
+  src/core/card_loader.cpp
 )
 target_include_directories(hexcrawl_core PUBLIC src/core)
 hexcrawl_warnings(hexcrawl_core)
 
+# JSON library (downloaded automatically, like raylib).
+include(FetchContent)
+FetchContent_Declare(json
+  GIT_REPOSITORY https://github.com/nlohmann/json.git
+  GIT_TAG v3.11.3
+  GIT_SHALLOW TRUE)
+FetchContent_MakeAvailable(json)
+target_link_libraries(hexcrawl_core PRIVATE nlohmann_json::nlohmann_json)
 # ---------------------------------------------------------------------------
 # hexcrawl_console: play chains in the terminal. No window, no raylib.
 # ---------------------------------------------------------------------------
@@ -44,7 +53,6 @@ hexcrawl_warnings(hexcrawl_console)
 # hexcrawl: the game itself (window, input, drawing). Links core + raylib.
 # ---------------------------------------------------------------------------
 if(HEXCRAWL_BUILD_GAME)
-  include(FetchContent)
   find_package(raylib 5.5 QUIET)
   if(NOT raylib_FOUND)
     FetchContent_Declare(raylib
