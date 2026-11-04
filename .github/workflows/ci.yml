@@ -12,6 +12,8 @@ jobs:
       - uses: actions/checkout@v4
       - run: cmake -B build -DHEXCRAWL_BUILD_GAME=OFF
       - run: cmake --build build
+      - name: Smoke test the resolver
+        run: ./build/hexcrawl_console
 
   game:
     runs-on: ubuntu-latest

@@ -13,20 +13,32 @@ endif()
 # Turn OFF to build only the headless core (used by CI and unit tests).
 option(HEXCRAWL_BUILD_GAME "Build the raylib game executable" ON)
 
+function(hexcrawl_warnings target)
+  if(MSVC)
+    target_compile_options(${target} PRIVATE /W4)
+  else()
+    target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic)
+  endif()
+endfunction()
+
 # ---------------------------------------------------------------------------
-# hexcrawl_core: pure game logic (cards, chain resolver, relics, runes math).
+# hexcrawl_core: pure game logic (cards, chain resolver, relics, rune math).
 # Must never include raylib. This is what unit tests and CI build.
 # ---------------------------------------------------------------------------
 add_library(hexcrawl_core STATIC
   src/core/version.cpp
+  src/core/resolver.cpp
+  src/core/cards.cpp
 )
 target_include_directories(hexcrawl_core PUBLIC src/core)
+hexcrawl_warnings(hexcrawl_core)
 
-if(MSVC)
-  target_compile_options(hexcrawl_core PRIVATE /W4)
-else()
-  target_compile_options(hexcrawl_core PRIVATE -Wall -Wextra -Wpedantic)
-endif()
+# ---------------------------------------------------------------------------
+# hexcrawl_console: play chains in the terminal. No window, no raylib.
+# ---------------------------------------------------------------------------
+add_executable(hexcrawl_console src/console/main.cpp)
+target_link_libraries(hexcrawl_console PRIVATE hexcrawl_core)
+hexcrawl_warnings(hexcrawl_console)
 
 # ---------------------------------------------------------------------------
 # hexcrawl: the game itself (window, input, drawing). Links core + raylib.
@@ -45,12 +57,7 @@ if(HEXCRAWL_BUILD_GAME)
 
   add_executable(hexcrawl src/game/main.cpp)
   target_link_libraries(hexcrawl PRIVATE hexcrawl_core raylib)
-
-  if(MSVC)
-    target_compile_options(hexcrawl PRIVATE /W4)
-  else()
-    target_compile_options(hexcrawl PRIVATE -Wall -Wextra -Wpedantic)
-  endif()
+  hexcrawl_warnings(hexcrawl)
 
   # Let the game find data/ no matter where it is launched from.
   target_compile_definitions(hexcrawl PRIVATE
