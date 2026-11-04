@@ -130,11 +130,15 @@ const std::vector<Card>& allCards() {
     return cards;
 }
 
-const Card* findCard(std::string_view id) {
-    for (const Card& c : allCards()) {
+const Card* findCard(const std::vector<Card>& cards, std::string_view id) {
+    for (const Card& c : cards) {
         if (c.id == id) return &c;
     }
     return nullptr;
+}
+
+const Card* findCard(std::string_view id) {
+    return findCard(allCards(), id);
 }
 
 } // namespace hex

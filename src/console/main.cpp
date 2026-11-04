@@ -14,10 +14,13 @@
 
 #include "cards.h"
 #include "resolver.h"
+#include "card_loader.h"
 
 using namespace hex;
 
 namespace {
+
+const std::vector<Card>* g_library = nullptr;
 
 bool parseChain(const std::vector<std::string>& specs, std::vector<PlayedCard>& out) {
     for (const std::string& spec : specs) {
@@ -28,7 +31,7 @@ bool parseChain(const std::vector<std::string>& specs, std::vector<PlayedCard>& 
             accuracy = std::strtof(spec.c_str() + colon + 1, nullptr);
             if (accuracy > 1.f) accuracy /= 100.f;
         }
-        const Card* card = findCard(id);
+        const Card* card = findCard(*g_library, id);
         if (!card) {
             std::fprintf(stderr, "unknown card '%s' (try --cards)\n", id.c_str());
             return false;
@@ -54,7 +57,7 @@ int run(const char* title, const std::vector<std::string>& specs, bool verbose =
 }
 
 void listCards() {
-    for (const Card& c : allCards()) {
+    for (const Card& c : *g_library) {
         std::printf("%-11s %-12s rune: %-9s %s\n",
                     c.id.c_str(), c.name.c_str(), c.rune.c_str(), c.text.c_str());
     }
@@ -80,15 +83,29 @@ void demos() {
 } // namespace
 
 int main(int argc, char** argv) {
-    if (argc == 1) { demos(); return 0; }
 
-    const std::string first = argv[1];
-    if (first == "--cards") { listCards(); return 0; }
-    if (first == "--help" || first == "-h") {
-        std::printf("usage: hexcrawl_console [--cards | id[:accuracy] ...]\n");
-        return 0;
+    std::vector<std::string> args(argv + 1, argv + argc);
+
+    std::vector<Card> loaded;           // lives as long as main(): chains point into it
+    g_library = &allCards();            // default: the built-in cards
+
+    if (args.size() >= 2 && args[0] == "--data") {
+        try {
+            loaded = loadCards(args[1]);
+        } catch (const std::exception& e) {
+            std::fprintf(stderr, "error: %s\n", e.what());
+            return 1;
+        }
+        g_library = &loaded;
+        args.erase(args.begin(), args.begin() + 2);     // forget "--data file"
     }
 
-    std::vector<std::string> specs(argv + 1, argv + argc);
-    return run("your chain", specs) < 0 ? 1 : 0;
+    if (args.empty()) { demos(); return 0; }
+    if (args[0] == "--cards") { listCards(); return 0; }
+    if (args[0] == "--help" || args[0] == "-h") {
+        std::printf("usage: hexcrawl_console [--data cards.json] [--cards | id[:accuracy] ...]\n");
+        return 0;
+    }
+    return run("your chain", args) < 0 ? 1 : 0;
+
 }

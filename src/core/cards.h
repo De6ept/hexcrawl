@@ -8,7 +8,6 @@ namespace hex {
 // The starter set. Returned references stay valid for the whole program.
 const std::vector<Card>& allCards();
 
-// Look a card up by its short id ("ember", "reverb", ...). nullptr if unknown.
 const Card* findCard(std::string_view id);
-
+const Card* findCard(const std::vector<Card>& cards, std::string_view id);
 } // namespace hex
