@@ -1,0 +1,24 @@
+{
+  "cards": [
+    {
+      "id": "ember",
+      "name": "Ember Bolt",
+      "rune": "triangle",
+      "text": "Deal 6. Sets Fire.",
+      "kind": "striker",
+      "element": "fire",
+      "power": { "base": 6, "resonant": 9 },
+      "tech": { "type": "ignite_next" }
+    },
+    {
+      "id": "frost",
+      "name": "Frost Shard",
+      "rune": "spiral",
+      "text": "Deal 5. Sets Ice.",
+      "kind": "striker",
+      "element": "ice",
+      "power": { "base": 5, "resonant": 8 },
+      "tech": { "type": "add_mult", "amount": 0.5 }
+    }
+  ]
+}

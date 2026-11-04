@@ -16,11 +16,79 @@ namespace {
 
 using json = nlohmann::json;
 
-// ---------- helpers (step 6) ----------
+// "fire" -> Element::Fire, and so on. A typo in the JSON becomes a clear error.
+Element parseElement(const std::string& name) {
+    if (name == "none")   return Element::None;
+    if (name == "fire")   return Element::Fire;
+    if (name == "ice")    return Element::Ice;
+    if (name == "storm")  return Element::Storm;
+    throw std::runtime_error(std::format("unknown element '{}'", name));
+}
 
-// ---------- kind builders (steps 6-10) ----------
+// A number that depends on the rune tier, like { "base": 6, "resonant": 9 }.
+struct Tiered {
+    float base = 0.f;
+    float resonant = 0.f;
+    float at(RuneTier t) const { return byTier(t, base, resonant); }
+};
 
-// ---------- kind table (step 6) ----------
+Tiered readTiered(const json& card, const char* key) {
+    const json& o = card.at(key);
+    return { o.at("base").get<float>(), o.at("resonant").get<float>() };
+}
+
+// The optional hidden tech, like { "type": "add_mult", "amount": 0.5 }.
+struct Tech {
+    std::string type;       // empty = this card has no tech
+    float amount = 0.f;
+    int count = 0;
+};
+
+Tech readTech(const json& card) {
+    Tech tech;
+    if (!card.contains("tech")) return tech;
+    const json& o = card.at("tech");
+    tech.type   = o.at("type").get<std::string>();
+    tech.amount = o.value("amount", 0.f);
+    tech.count  = o.value("count", 0);
+    return tech;
+}
+
+// ---------- kind builders
+
+EffectFn makeStriker(const json& card) {
+    //  Read everything we need from the JSON NOW, into plain C++ values.
+    const Element element = parseElement(card.value("element", "none"));
+    const Tiered  power   = readTiered(card, "power");
+    const Tech    tech    = readTech(card);
+
+    //  Build the effect. [=] COPIES element, power and tech into the lambda,
+    //  so it keeps working after this function (and the json) is long gone.
+    return [=](ChainState& s, RuneTier t) {
+        if (element != Element::None) s.element = element;
+        strike(s, power.at(t));             // power.at(t) = base or resonant number
+
+        if (!isPerfect(t)) return;          // hidden tech only fires on Perfect
+        if (tech.type == "ignite_next") {
+            s.igniteNext = true;
+            s.note("  hidden tech: the next card ends as Fire");
+        } else if (tech.type == "add_mult") {
+            s.mult += tech.amount;
+            s.note(std::format("  hidden tech: +{:g} mult", tech.amount));
+        }
+    };
+}
+
+// ---------- kind table 
+// A table from the "kind" text in the JSON to the function that builds that kind.
+using Factory = EffectFn (*)(const json&);
+
+const std::unordered_map<std::string, Factory>& kinds() {
+    static const std::unordered_map<std::string, Factory> table = {
+        {"striker", makeStriker},
+    };
+    return table;
+}
 
 // Build ONE Card from ONE { ... } block of the JSON file.
 Card loadCard(const json& j) {
@@ -31,7 +99,12 @@ Card loadCard(const json& j) {
     card.text     = j.at("text").get<std::string>();
     card.echoable = j.value("echoable", true);      // optional field, default true
 
-    // STEP 6: the "kind" lookup goes here. For now the effect stays empty.
+    const std::string kind = j.at("kind").get<std::string>();
+    const auto it = kinds().find(kind);
+    if (it == kinds().end()) {
+        throw std::runtime_error(std::format("unknown kind '{}'", kind));
+    }
+    card.effect = it->second(j);        // call the builder, keep the effect it returns
     return card;
 }
 
