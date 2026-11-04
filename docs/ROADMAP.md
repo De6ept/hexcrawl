@@ -1,6 +1,6 @@
 # Roadmap
 
-One GitLab milestone per phase. One issue per feature. New ideas go in a
+One GitHub milestone per phase. One issue per feature. New ideas go in a
 "later" backlog issue, not the current phase.
 
 - [x] Phase 0: Setup. Repo, CMake, window opens.
