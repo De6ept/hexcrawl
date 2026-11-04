@@ -49,6 +49,10 @@ add_executable(hexcrawl_console src/console/main.cpp)
 target_link_libraries(hexcrawl_console PRIVATE hexcrawl_core)
 hexcrawl_warnings(hexcrawl_console)
 
+# Scratch program for learning JSON. Not part of the game.
+add_executable(playground src/console/playground.cpp)
+target_link_libraries(playground PRIVATE nlohmann_json::nlohmann_json)
+
 # ---------------------------------------------------------------------------
 # hexcrawl: the game itself (window, input, drawing). Links core + raylib.
 # ---------------------------------------------------------------------------
