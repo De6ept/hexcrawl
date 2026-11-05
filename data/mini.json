@@ -19,6 +19,49 @@
       "element": "ice",
       "power": { "base": 5, "resonant": 8 },
       "tech": { "type": "add_mult", "amount": 0.5 }
+    },
+    {
+      "id": "spark",
+      "name": "Spark",
+      "rune": "zigzag",
+      "text": "Deal 3. First slot only: +10 more. Sets Storm.",
+      "kind": "opener",
+      "element": "storm",
+      "power": { "base": 3, "resonant": 3 },
+      "opener_bonus": { "base": 10, "resonant": 15 },
+      "tech": { "type": "add_mult", "amount": 1.0 }
+    },
+     {
+      "id": "overcharge",
+      "name": "Overcharge",
+      "rune": "cross",
+      "text": "+1 mult for later strikes.",
+      "kind": "amplifier",
+      "mult_gain": { "base": 1.0, "resonant": 1.5 },
+      "tech": { "type": "retroactive" }
+    },
+      {
+      "id": "reverb",
+      "name": "Reverb",
+      "rune": "circle",
+      "text": "Re-trigger the previous card. Resonant+: echoes play at Resonant at least.",
+      "kind": "echo",
+      "echoable": false,
+      "count": 1,
+      "resonant_floor": true,
+      "tech": { "type": "echo_count", "count": 2 }
+    },
+     {
+      "id": "wildfire",
+      "name": "Wildfire",
+      "rune": "wave",
+      "text": "Deal 4. x2 if the chain element is Fire. Sets Fire.",
+      "kind": "conditional",
+      "element": "fire",
+      "power": { "base": 4, "resonant": 6 },
+      "requires_element": "fire",
+      "multiplier": 2,
+      "tech": { "type": "ignore_condition" }
     }
   ]
 }
