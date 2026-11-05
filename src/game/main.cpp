@@ -84,7 +84,7 @@ void drawPlayer() {
 void drawEnemy(const Enemy& e) {
     DrawRectangleRec(kEnemyBox, Color{150, 50, 60, 255});
     DrawRectangleLinesEx(kEnemyBox, 2.f, BLACK);
-    DrawText("dummy", px(kEnemyBox.x) + 12, px(kEnemyBox.y) + 12, 22, RAYWHITE);
+    DrawText(e.name.c_str(), px(kEnemyBox.x) + 12, px(kEnemyBox.y) + 12, 22, RAYWHITE);
 
     // The "intent" floats above the enemy's head, like in Slay the Spire.
     DrawText(TextFormat("Intent: %s", e.intent.c_str()), px(kEnemyBox.x), px(kEnemyBox.y) - 34, 22, GOLD);
