@@ -136,7 +136,7 @@ EffectFn makeEcho(const json& card) {
         // How many cards to echo: normally baseCount, but a Perfect trace + tech changes it.
         std::size_t count = baseCount;
         if (isPerfect(t) && tech.type == "echo_count") {
-            count = baseCount;   // the tech's own "count" number
+            count = tech.count;   // the tech's own "count" number
         }
 
         // The tier echoed cards play at: Resonant at least, if this card asks for it.
