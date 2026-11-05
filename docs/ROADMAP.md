@@ -5,7 +5,10 @@ One GitHub milestone per phase. One issue per feature. New ideas go in a
 
 - [x] Phase 0: Setup. Repo, CMake, window opens.
 - [x] Phase 1: Headless resolver. Card, ChainState, resolveChain(), 5 cards, console harness.
-- [x] Phase 2: Data and tests. cards.json loading, relic hooks, doctest.
+- [ ] Phase 2: Data-driven cards and relics
+  - [x] cards.json loading (kinds, techs, `--data`)
+  - [ ] relic hooks in `resolveChain()` (Twin Wick first)
+  - [ ] unit tests with doctest (postponed on purpose)
 - [ ] Phase 3: raylib prototype. Hand, drag into slots, Cast button.
 - [ ] Phase 4: Rune tracing. Stroke capture, $1 recognizer, accuracy tiers.
 
