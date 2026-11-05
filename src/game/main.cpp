@@ -87,7 +87,7 @@ void drawEnemy(const Enemy& e) {
     DrawText("dummy", px(kEnemyBox.x) + 12, px(kEnemyBox.y) + 12, 22, RAYWHITE);
 
     // The "intent" floats above the enemy's head, like in Slay the Spire.
-    DrawText(TextFormat("Intent: %s", e), px(kEnemyBox.x), px(kEnemyBox.y) - 34, 22, GOLD);
+    DrawText(TextFormat("Intent: %s", e.intent.c_str()), px(kEnemyBox.x), px(kEnemyBox.y) - 34, 22, GOLD);
 
     drawHpBar({ kEnemyBox.x, kEnemyBox.y + kEnemyBox.height + 14.f, kEnemyBox.width, 22.f }, e.hp, e.maxHp);
 }
